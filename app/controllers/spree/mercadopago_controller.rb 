@@ -1,0 +1,25 @@
+module Spree
+  class MercadopagoController < Spree::BaseController
+    def notify
+      # TODO WORK WITH NOTIFICATION
+      payment = Spree::Payment.find_by!(number: params[:payment_id])
+      payment_method = payment.payment_method
+
+      case params[:state]
+      when 'completed'
+        payment.complete!
+        order = payment.order
+        order.skip_stock_validation = true
+        ix = 0
+        while !order.completed? && ix < 5
+          order.next!
+          ix += 1
+        end
+      end
+
+      head :ok
+    rescue
+      head :unprocessable_entity
+    end
+  end
+end
