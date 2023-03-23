@@ -3,6 +3,7 @@ require 'mercadopago'
 module Spree
   class PaymentMethod::MercadoPago < PaymentMethod
     preference :access_token, :string
+    preference :public_key, :string
 
     def provider
       @provider ||= Mercadopago::SDK.new(preferred_access_token)
