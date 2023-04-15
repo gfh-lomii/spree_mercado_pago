@@ -5,17 +5,16 @@
 <script>
 document.addEventListener("DOMContentLoaded", function(event) {
   $("#paymentBrick_container").show(function(){
-    const mp = new MercadoPago("TEST-3637eba7-aab8-4ba3-b65b-deb47d96dd45", {
+    const mp = new MercadoPago("<%= Spree::PaymentMethod.find_by_type("Spree::PaymentMethod::MercadoPago")&.preferred_public_key %>", {
       locale: 'es-CL',
     });
-    const bricksBuilder = mp.bricks({ theme: 'flat' });
+    const bricksBuilder = mp.bricks({ theme: 'bootstrap' });
     const renderPaymentBrick = async (bricksBuilder) => {
       const settings = {
         initialization: {
-          amount: 100, // monto a ser pago
+          amount: <%= @order.total %>, // monto a ser pago
           payer: {
-            customerId: '209277402-FqRqgEc3XItrxs',
-            cardsIds: [ '1518023392627', '1518023332143' ]
+            email: "<%= spree_current_user.email %>",
           },
         },
         customization: {
@@ -24,14 +23,18 @@ document.addEventListener("DOMContentLoaded", function(event) {
             debitCard: 'all',
           },
           visual: {
-            hidePaymentButton: false,
+            hideFormTitle: true,
+            hidePaymentButton: true,
             style: {
                 customVariables: {
                     baseColor: '#00c687',
+                    formPadding: 0
                 },
             },
           }
         },
+        binary_mode: true,
+        statement_descriptor: "Lomi",
         callbacks: {
           onReady: () => {
             /*
@@ -41,23 +44,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
           },
           onSubmit: ({ selectedPaymentMethod, formData }) => {
             // callback llamado cuando el usuario haz clic en el botón enviar los datos
-              return new Promise((resolve, reject) => {
-                fetch("/mercadopago/checkout", {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify(formData)
-                })
-                  .then((response) => {
-                    // recibir el resultado del pago
-                    resolve();
-                  })
-                  .catch((error) => {
-                    // tratar respuesta de error al intentar crear el pago
-                    reject();
-                  })
-              });
           },
           onError: (error) => {
             // callback llamado para todos los casos de error de Brick

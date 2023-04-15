@@ -12,8 +12,8 @@ Gem::Specification.new do |s|
   s.description = 'Add (optional) extension description here'
   s.required_ruby_version = '>= 2.5'
 
-  s.author    = 'You'
-  s.email     = 'you@example.com'
+  s.author    = 'Sergio Arriagada'
+  s.email     = 'sarriagada87@gmail.com'
   s.homepage  = 'https://github.com/your-github-handle/spree_mercado_pago'
   s.license = 'BSD-3-Clause'
 
@@ -21,7 +21,7 @@ Gem::Specification.new do |s|
   s.require_path = 'lib'
   s.requirements << 'none'
 
-  s.add_dependency 'spree', '>= 4.3.2'
+  s.add_dependency 'spree', '>= 4.3.0.rc2'
   # s.add_dependency 'spree_backend' # uncomment to include Admin Panel changes
   s.add_dependency 'spree_extension'
   s.add_dependency 'mercadopago-sdk', '~> 2.1.0'

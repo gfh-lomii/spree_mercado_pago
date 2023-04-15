@@ -1,0 +1,96 @@
+<% payment_method = Spree::PaymentMethod.active.available_on_front_end.find_by_type("Spree::PaymentMethod::MercadoPago") %>
+<% if payment_method %>
+  <label class="d-block" for="<%= dom_id(payment_method) %>">
+    <div class="card-lomi mb-3">
+      <div class="d-flex justify-content-between align-items-center px-1">
+        <div class="d-flex">
+          <div class="icon-lomi boton-rounded mr-3 shadow2-lomi justify-content-center align-items-center" style="width: 41px; height: 41px;">
+            <%= image_tag main_app.url_for(payment_method&.image&.url(:small) || 'icon.png'), class: 'w-100 d-block my-1 rounded-circle' %>
+          </div>
+          <div>
+            <p class="titulo-l-semibold color-dark-blue-lomi mb-1"><%= payment_method.name %></strong></label>
+            <p class="mb-0 texto-s color-grey-lomi"><%= payment_method.description %></p>
+          </div>
+        </div>
+        <input type="radio"
+              id="<%= dom_id(payment_method) %>"
+              name="method"
+              data-action='checkout#selectPaymentMethod'
+              value="<%= payment_method.id %>"
+              data-type="<%= payment_method.type %>"
+              data-title="<%= payment_method.name %>"
+              data-description="<%= payment_method.description %>"
+              data-icon="<%= main_app.url_for(payment_method&.image&.url(:small) || 'icon.png') %>">
+      </div>
+    </div>
+  </label>
+<% end %>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function(event) {
+    $('input[name="method"]').on('change', function() {
+      $('#checkout-mercado-pago').toggleClass('d-none', $(this).val() != <%= payment_method.id %>)
+      $('button[type="submit"]').toggleClass('d-none', $(this).val() == <%= payment_method.id %>)
+      $('#mercado-pago-button').toggleClass('d-none', $(this).val() != <%= payment_method.id %>)
+    });
+
+    const btnText = $('#mercado-pago-button').html()
+
+    function disableMercadoPagoBtn() {
+      $('#mercado-pago-button')
+      $('#mercado-pago-button').prop('disabled', true)
+      $('#mercado-pago-button').html("<i class='fa fa-spinner fa-spin'></i>")
+    }
+
+    function enableMercadoPagoBtn() {
+      $('#mercado-pago-button').prop('disabled', false)
+      $('#mercado-pago-button').html(btnText)
+    }
+
+    $('#mercado-pago-button').on('click', function() {
+      disableMercadoPagoBtn()
+
+      const formData = $('form').serializeArray();
+      window.paymentBrickController.getFormData()
+        .then(async (cardFormData) => {
+          console.log('creating payment...', cardFormData);
+          const formElement = document.querySelector("form");
+          const formData = new FormData(formElement)
+
+          const values = Object.fromEntries(formData.entries());
+          fetch("/api/v2/storefront/checkout", {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+              'Authorization': `Bearer ${SpreeAPI.oauthToken}`,
+            },
+            body: JSON.stringify({
+              ...values,
+              mercadopago: {
+                ...cardFormData
+              }
+            }),
+          })
+          .then(response => response.json())
+          .then(data => {
+            enableMercadoPagoBtn()
+            if(data.error === undefined) {
+              window.location.href = data.return_url
+            } else {
+              console.error("payment error:", data)
+            }
+          })
+          .catch(function(error) {
+            enableMercadoPagoBtn()
+            console.error('Hubo un problema con la petición:' + error.message);
+          });
+        })
+        .catch((error) => {
+          enableMercadoPagoBtn()
+          // manejo de errores al llamar a getFormData()
+          console.error('cardFormData received error', error);
+        });
+    });
+  });
+</script>
+

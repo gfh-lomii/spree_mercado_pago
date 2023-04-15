@@ -18,7 +18,8 @@ module SpreeMercadoPago
     config.to_prepare &method(:activate).to_proc
 
     # Initialize new payment method
-    config.after_initialize do |app|
+    initializer "spree.mercado_pago.payment_methods",
+                after: "spree.register.payment_methods" do |app|
       app.config.spree.payment_methods << Spree::PaymentMethod::MercadoPago
       app.config.assets.precompile += %w(mercadopago_logo.png)
     end
