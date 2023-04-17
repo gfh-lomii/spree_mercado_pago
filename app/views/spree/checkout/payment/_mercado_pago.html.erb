@@ -2,58 +2,66 @@
 
 <script src="https://sdk.mercadopago.com/js/v2"></script>
 
+<%= hidden_field_tag 'order[mercadopago][transaction_amount]' %>
+<%= hidden_field_tag 'order[mercadopago][token]' %>
+<%= hidden_field_tag 'order[mercadopago][installments]' %>
+<%= hidden_field_tag 'order[mercadopago][payment_method_id]' %>
+<%= hidden_field_tag 'order[mercadopago][payer][email]' %>
+<%= hidden_field_tag 'order[mercadopago][payer][identification][type]' %>
+<%= hidden_field_tag 'order[mercadopago][payer][identification][number]' %>
+
 <script>
-document.addEventListener("DOMContentLoaded", function(event) {
-  $("#paymentBrick_container").show(function(){
-    const mp = new MercadoPago("<%= Spree::PaymentMethod.find_by_type("Spree::PaymentMethod::MercadoPago")&.preferred_public_key %>", {
-      locale: 'es-CL',
-    });
-    const bricksBuilder = mp.bricks({ theme: 'bootstrap' });
-    const renderPaymentBrick = async (bricksBuilder) => {
-      const settings = {
-        initialization: {
-          amount: <%= @order.total %>, // monto a ser pago
-          payer: {
-            email: "<%= spree_current_user.email %>",
-          },
-        },
-        customization: {
-          paymentMethods: {
-            creditCard: 'all',
-            debitCard: 'all',
-          },
-          visual: {
-            hideFormTitle: true,
-            hidePaymentButton: true,
-            style: {
-                customVariables: {
-                    baseColor: '#00c687',
-                    formPadding: 0
-                },
+  document.addEventListener("DOMContentLoaded", function(event) {
+    $("#paymentBrick_container").show(function(){
+      const mp = new MercadoPago("<%= Spree::PaymentMethod.find_by_type("Spree::PaymentMethod::MercadoPago")&.preferred_public_key %>", {
+        locale: 'es-CL',
+      });
+      const bricksBuilder = mp.bricks({ theme: 'bootstrap' });
+      const renderPaymentBrick = async (bricksBuilder) => {
+        const settings = {
+          initialization: {
+            amount: <%= @order.total %>, // monto a ser pago
+            payer: {
+              email: "<%= spree_current_user.email %>",
             },
-          }
-        },
-        binary_mode: true,
-        statement_descriptor: "Lomi",
-        callbacks: {
-          onReady: () => {
-            /*
-              Callback llamado cuando Brick está listo
-              Aquí puedes ocultar loadings de su sitio, por ejemplo.
-            */
           },
-          onSubmit: ({ selectedPaymentMethod, formData }) => {
-            // callback llamado cuando el usuario haz clic en el botón enviar los datos
+          customization: {
+            paymentMethods: {
+              creditCard: 'all',
+              debitCard: 'all',
+            },
+            visual: {
+              hideFormTitle: true,
+              hidePaymentButton: true,
+              style: {
+                  customVariables: {
+                      baseColor: '#00c687',
+                      formPadding: 0
+                  },
+              },
+            }
           },
-          onError: (error) => {
-            // callback llamado para todos los casos de error de Brick
-            console.error(error);
+          binary_mode: true,
+          statement_descriptor: "Lomi",
+          callbacks: {
+            onReady: () => {
+              /*
+                Callback llamado cuando Brick está listo
+                Aquí puedes ocultar loadings de su sitio, por ejemplo.
+              */
+            },
+            onSubmit: ({ selectedPaymentMethod, formData }) => {
+              // callback llamado cuando el usuario haz clic en el botón enviar los datos
+            },
+            onError: (error) => {
+              // callback llamado para todos los casos de error de Brick
+              console.error(error);
+            },
           },
-        },
+        };
+        window.paymentBrickController = await bricksBuilder.create('payment', 'paymentBrick_container', settings);
       };
-      window.paymentBrickController = await bricksBuilder.create('payment', 'paymentBrick_container', settings);
-    };
-    renderPaymentBrick(bricksBuilder);
+      renderPaymentBrick(bricksBuilder);
+    });
   });
-});
 </script>

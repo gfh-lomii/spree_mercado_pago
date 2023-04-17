@@ -53,37 +53,15 @@
       const formData = $('form').serializeArray();
       window.paymentBrickController.getFormData()
         .then(async (cardFormData) => {
-          console.log('creating payment...', cardFormData);
-          const formElement = document.querySelector("form");
-          const formData = new FormData(formElement)
+          document.getElementById('order_mercadopago_transaction_amount').value = cardFormData.formData.transaction_amount
+          document.getElementById('order_mercadopago_token').value = cardFormData.formData.token
+          document.getElementById('order_mercadopago_installments').value = cardFormData.formData.installments
+          document.getElementById('order_mercadopago_payment_method_id').value = cardFormData.formData.payment_method_id
+          document.getElementById('order_mercadopago_payer_email').value = cardFormData.formData.payer.email
+          document.getElementById('order_mercadopago_payer_identification_type').value = cardFormData.formData.payer.identification.type
+          document.getElementById('order_mercadopago_payer_identification_number').value = cardFormData.formData.payer.identification.number
 
-          const values = Object.fromEntries(formData.entries());
-          fetch("/api/v2/storefront/checkout", {
-            method: "PATCH",
-            headers: {
-              "Content-Type": "application/json",
-              'Authorization': `Bearer ${SpreeAPI.oauthToken}`,
-            },
-            body: JSON.stringify({
-              ...values,
-              mercadopago: {
-                ...cardFormData
-              }
-            }),
-          })
-          .then(response => response.json())
-          .then(data => {
-            enableMercadoPagoBtn()
-            if(data.error === undefined) {
-              window.location.href = data.return_url
-            } else {
-              console.error("payment error:", data)
-            }
-          })
-          .catch(function(error) {
-            enableMercadoPagoBtn()
-            console.error('Hubo un problema con la petición:' + error.message);
-          });
+          document.querySelector("form").submit()
         })
         .catch((error) => {
           enableMercadoPagoBtn()

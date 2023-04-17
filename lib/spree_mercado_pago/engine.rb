@@ -15,7 +15,7 @@ module SpreeMercadoPago
       end
     end
 
-    config.to_prepare &method(:activate).to_proc
+    config.to_prepare(&method(:activate).to_proc)
 
     # Initialize new payment method
     initializer "spree.mercado_pago.payment_methods",

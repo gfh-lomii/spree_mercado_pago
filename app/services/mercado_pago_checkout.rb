@@ -9,7 +9,6 @@ class MercadoPagoCheckout
   end
 
   def call
-    puts ">>>>> mercadopago_data: #{@mercadopago_data}"
     order = Spree::Order.find(@order_id)
     payment_method = Spree::PaymentMethod.find_by_type("Spree::PaymentMethod::MercadoPago")
     payment = order.payments.build(payment_method_id: payment_method.id, amount: order.total, state: 'checkout')
@@ -30,7 +29,6 @@ class MercadoPagoCheckout
       }
     }
 
-    puts ">>>>> payment_data: #{payment_data}"
     sdk = Mercadopago::SDK.new(payment_method.preferred_access_token)
     payment_response = sdk.payment.create(payment_data)&.dig(:response) || {}
     puts ">>>>> mercadopago_checkout payment_response: #{payment_response.inspect}"
