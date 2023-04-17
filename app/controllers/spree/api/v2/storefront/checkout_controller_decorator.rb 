@@ -1,4 +1,4 @@
-module SpreeMercadoPago::Spree
+module Spree
   module Api
     module V2
       module Storefront
@@ -9,6 +9,7 @@ module SpreeMercadoPago::Spree
 
           def mercadopago_checkout
             puts ">>>>> pay_with_mercadopago on API update"
+            byebug
             spree_authorize! :update, spree_current_order, order_token
 
             result = update_service.call(
@@ -20,11 +21,12 @@ module SpreeMercadoPago::Spree
             )
 
             if spree_current_order.state == 'payment'
-              pm_id = params["order[payments_attributes][][payment_method_id]"] || params[:method]
+              pm_id = params[:order][:payments_attributes].first.dig(:payment_method_id)
               payment_method = Spree::PaymentMethod.find(pm_id)
               if payment_method && payment_method.kind_of?(Spree::PaymentMethod::MercadoPago)
                 # pay with mercadopago
-                payment_response = MercadoPagoCheckout.call(spree_current_order.id, params[:mercadopago])
+                payment_response = MercadoPagoCheckout.call(spree_current_order.id, params[:order][:mercadopago])
+                spree_current_order.reload
                 if payment_response.dig(:status) == "approved"
                   spree_current_order.skip_stock_validation = true
                   ix = 0
@@ -35,7 +37,6 @@ module SpreeMercadoPago::Spree
 
                   render json: { return_url: "/orders/#{spree_current_order.number}" }, status: :ok and return
                 else
-                  puts ">>>>> payment message: #{payment_response.dig(:message)}"
                   render_error_payload({ message: payment_response.dig(:message) })
                 end
               end
@@ -47,4 +48,4 @@ module SpreeMercadoPago::Spree
   end
 end
 
-Spree::Api::V2::Storefront::CheckoutController.prepend SpreeMercadoPago::Spree::Api::V2::Storefront::CheckoutControllerDecorator if Spree::Api::V2::Storefront::CheckoutController.included_modules.exclude?(SpreeMercadoPago::Spree::Api::V2::Storefront::CheckoutControllerDecorator)
+::Spree::Api::V2::Storefront::CheckoutController.prepend Spree::Api::V2::Storefront::CheckoutControllerDecorator
