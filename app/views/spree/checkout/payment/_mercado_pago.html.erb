@@ -13,16 +13,19 @@
 <script>
   document.addEventListener("DOMContentLoaded", function(event) {
     $("#paymentBrick_container").show(function(){
-      const mp = new MercadoPago("<%= Spree::PaymentMethod.find_by_type("Spree::PaymentMethod::MercadoPago")&.preferred_public_key %>", {
+      const mp = new MercadoPago("<%= Spree::PaymentMethod.find_by_type('Spree::PaymentMethod::MercadoPago')&.preferred_public_key %>", {
         locale: 'es-CL',
       });
       const bricksBuilder = mp.bricks({ theme: 'bootstrap' });
+      <% payer = GetMercadoPagoPayer.call(spree_current_user.id) %>
       const renderPaymentBrick = async (bricksBuilder) => {
         const settings = {
           initialization: {
             amount: <%= @order.total %>, // monto a ser pago
             payer: {
               email: "<%= spree_current_user.email %>",
+              customer_id: <%= payer.dig(:customer_id) %>,
+              cards: <%= payer.dig(:cards) %>
             },
           },
           customization: {
