@@ -7,8 +7,12 @@
 <%= hidden_field_tag 'order[mercadopago][installments]' %>
 <%= hidden_field_tag 'order[mercadopago][payment_method_id]' %>
 <%= hidden_field_tag 'order[mercadopago][payer][email]' %>
+<%= hidden_field_tag 'order[mercadopago][payer][type]' %>
+<%= hidden_field_tag 'order[mercadopago][payer][id]' %>
 <%= hidden_field_tag 'order[mercadopago][payer][identification][type]' %>
 <%= hidden_field_tag 'order[mercadopago][payer][identification][number]' %>
+
+<% payer = GetMercadoPagoPayer.call(spree_current_user.id) %>
 
 <script>
   document.addEventListener("DOMContentLoaded", function(event) {
@@ -17,15 +21,14 @@
         locale: 'es-CL',
       });
       const bricksBuilder = mp.bricks({ theme: 'bootstrap' });
-      <% payer = GetMercadoPagoPayer.call(spree_current_user.id) %>
       const renderPaymentBrick = async (bricksBuilder) => {
         const settings = {
           initialization: {
             amount: <%= @order.total %>, // monto a ser pago
             payer: {
               email: "<%= spree_current_user.email %>",
-              customer_id: <%= payer.dig(:customer_id) %>,
-              cards: <%= payer.dig(:cards) %>
+              customerId: "<%= payer.dig(:customer_id) %>",
+              cardsIds: [<%= payer.dig(:cards).join(', ') %>]
             },
           },
           customization: {
