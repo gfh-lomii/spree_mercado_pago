@@ -14,7 +14,8 @@ module Spree
             # pay with mercadopago
             payment_response = MercadoPagoCheckout.call(@order.id, params[:order][:mercadopago])
             @order.reload
-            if payment_response.dig(:status) == "approved"
+            case payment_response.dig(:status)
+            when "approved"
               @order.skip_stock_validation = true
               ix = 0
               while !@order.completed? && ix < 5
@@ -22,6 +23,8 @@ module Spree
                 ix += 1
               end
 
+              redirect_to(completion_route) && return
+            when "pending", "in_process"
               redirect_to(completion_route) && return
             else
               flash[:error] = payment_response.dig(:message)

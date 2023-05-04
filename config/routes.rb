@@ -1,3 +1,3 @@
 Spree::Core::Engine.add_routes do
-  # Add your extension routes here
+  post '/mercadopago/notify', to: 'mercadopago#notify'
 end
