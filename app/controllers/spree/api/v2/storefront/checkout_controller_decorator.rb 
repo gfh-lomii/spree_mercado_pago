@@ -8,6 +8,8 @@ module Spree
           end
 
           def mercadopago_checkout
+            pm_id = params[:order][:payments_attributes].first.dig(:payment_method_id)
+            Rails.logger.info ">>>> mercadopago_checkout: #{pm_id}"
             spree_authorize! :update, spree_current_order, order_token
 
             result = update_service.call(
@@ -46,4 +48,4 @@ module Spree
   end
 end
 
-::Spree::Api::V2::Storefront::CheckoutController.prepend Spree::Api::V2::Storefront::CheckoutControllerDecorator
+::Spree::Api::V2::Storefront::CheckoutController.prepend ::Spree::Api::V2::Storefront::CheckoutControllerDecorator
