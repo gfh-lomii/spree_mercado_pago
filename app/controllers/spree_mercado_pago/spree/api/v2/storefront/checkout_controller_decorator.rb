@@ -24,7 +24,7 @@ module SpreeMercadoPago
               if spree_current_order.state == 'payment'
                 pm_id = params[:order][:payments_attributes].first.dig(:payment_method_id)
                 payment_method = spree_current_order.payments.last&.payment_method
-                if payment_method && payment_method.kind_of?(Spree::PaymentMethod::MercadoPago)
+                if payment_method && payment_method.kind_of?(::Spree::PaymentMethod::MercadoPago)
                   # pay with mercadopago
                   payment_response = MercadoPagoCheckout.call(spree_current_order.id, params[:order][:mercadopago])
                   spree_current_order.reload
