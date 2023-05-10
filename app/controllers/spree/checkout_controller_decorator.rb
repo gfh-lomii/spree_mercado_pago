@@ -27,7 +27,7 @@ module Spree
             when "pending", "in_process"
               redirect_to(completion_route) && return
             else
-              flash[:error] = payment_response.dig(:message)
+              flash[:error] = MercadoPagoMessage.call(payment_response.dig(:message))
               redirect_to(checkout_state_path(@order.state)) && return
             end
           end

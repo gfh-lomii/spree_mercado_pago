@@ -38,7 +38,7 @@ module SpreeMercadoPago
 
                     render json: { return_url: "/orders/#{spree_current_order.number}" }, status: :ok and return
                   else
-                    render_error_payload({ message: payment_response.dig(:message) })
+                    render_error_payload({ message: MercadoPagoMessage.call(payment_response.dig(:message)) })
                   end
                 end
               end

@@ -20,6 +20,7 @@ class MercadoPagoCheckout
     items << {
       id: '000',
       title: 'shipping cost',
+      description: 'costo de envío'
       unit_price: (order&.shipments&.to_a&.sum(&:cost) || 0).to_f,
       quantity: 1
     } unless order.pick_up_in_store
@@ -28,6 +29,7 @@ class MercadoPagoCheckout
       items << {
         id: item.id.to_s,
         title: item.name,
+        description: item.description,
         unit_price: item.price.to_f,
         quantity: item.quantity
       }
