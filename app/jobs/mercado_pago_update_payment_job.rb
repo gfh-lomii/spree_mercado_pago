@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
 class MercadoPagoUpdatePaymentJob < ApplicationJob
-  def perform(x_reference)
+  def perform(x_reference, type)
+    Rails.logger.info(">>> on MercadoPagoUpdatePaymentJob: #{x_reference}")
+    return if type != "test"
     # GET PAYMENT TO CHECK UPDATES
     payment = Spree::Payment.find_by(response_code: x_reference)
     payment ||= Spree::Payment.find_by!(number: x_reference)

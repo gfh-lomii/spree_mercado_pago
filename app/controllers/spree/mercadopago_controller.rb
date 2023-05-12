@@ -16,8 +16,7 @@ module Spree
     #   }
     # }
     def notify
-      x_reference = params.dig('data', 'id')
-      MercadoPagoUpdatePaymentJob.preform_later(x_reference) if params.dig('type') != "test"
+      MercadoPagoUpdatePaymentJob.preform_later(params.dig('data', 'id'), params.dig('type'))
       head :ok
     rescue
       head :unprocessable_entity
