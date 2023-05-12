@@ -16,7 +16,7 @@ module Spree
     #   }
     # }
     def notify
-      MercadoPagoUpdatePaymentJob.preform_later(params.dig('data', 'id'), params.dig('type'))
+      MercadoPagoUpdatePaymentJob.perform_later(params.dig('data', 'id'), params.dig('type'))
       head :ok
     rescue
       head :unprocessable_entity

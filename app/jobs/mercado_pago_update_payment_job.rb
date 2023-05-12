@@ -4,12 +4,14 @@ class MercadoPagoUpdatePaymentJob < ApplicationJob
   def perform(x_reference, type)
     Rails.logger.info(">>> on MercadoPagoUpdatePaymentJob: #{x_reference}")
     return if type != "test"
+
+    payment_method = Spree::PaymentMethod.find_by_type("Spree::PaymentMethod::MercadoPago")
+    sdk = Mercadopago::SDK.new(payment_method.preferred_access_token)
+    payment_response = sdk.payment.get(x_reference)&.dig(:response)
+
     # GET PAYMENT TO CHECK UPDATES
     payment = Spree::Payment.find_by(response_code: x_reference)
     payment ||= Spree::Payment.find_by!(number: x_reference)
-
-    sdk = Mercadopago::SDK.new(payment.payment_method.preferred_access_token)
-    payment_response = sdk.payment.get(x_reference)&.dig(:response)
     order = payment.order
     if !payment.completed?
       response_message = payment_response.dig("status_detail") || payment_response.dig("message")
