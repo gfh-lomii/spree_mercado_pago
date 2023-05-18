@@ -74,11 +74,13 @@ class MercadoPagoCheckout
     when "approved"
       payment.complete!
 
-      unless @mercadopago_data.dig(:payer, :id).present?
-        customers_response = sdk.customer.search(filters: { email: order.user&.email })&.dig(:response)&.dig("results")&.first
-        customer_id = customers_response&.dig("id")
-        sdk.card.create(customer_id, { token: @mercadopago_data.dig(:token) })
+      customers_response = sdk.customer.search(filters: { email: order.user&.email })&.dig(:response)&.dig("results")&.first
+      customer_id = customers_response&.dig("id")
+      unless customer_id
+        customer_response = sdk.customer.create({ email: order.user&.email })
+        customer_id = customer_response[:response]&.dig("id")
       end
+      sdk.card.create(customer_id, { token: @mercadopago_data.dig(:token) }) rescue nil
     when "rejected"
       payment.update(cvv_response_message: response_message)
       payment.failure!
