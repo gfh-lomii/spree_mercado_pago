@@ -6,7 +6,7 @@ module Spree
     preference :public_key, :string
 
     def provider
-      @provider ||= Mercadopago::SDK.new(preferred_access_token)
+      @provider ||= Mercadopago::SDK.new(preferred_access_token || 'accesstoken')
     end
 
     def payment_profiles_supported?

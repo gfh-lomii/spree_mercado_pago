@@ -11,6 +11,7 @@ class MercadoPagoCheckout
   def call
     order = Spree::Order.find(@order_id)
     payment_method = Spree::PaymentMethod.find_by_type("Spree::PaymentMethod::MercadoPago")
+    return unless payment_method
     payment = order.payments.build(payment_method_id: payment_method.id, amount: order.total, state: 'checkout')
     payment.save
     payment.pend!
@@ -65,7 +66,7 @@ class MercadoPagoCheckout
       }
     end
 
-    sdk = Mercadopago::SDK.new(payment_method.preferred_access_token)
+    sdk = Mercadopago::SDK.new(payment_method.preferred_access_token || '')
     payment_response = sdk.payment.create(payment_data)&.dig(:response) || {}
     response_message = payment_response.dig("status_detail") || payment_response.dig("message")
 

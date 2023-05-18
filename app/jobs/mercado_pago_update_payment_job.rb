@@ -6,7 +6,8 @@ class MercadoPagoUpdatePaymentJob < ApplicationJob
     return if type == "test"
 
     payment_method = Spree::PaymentMethod.find_by_type("Spree::PaymentMethod::MercadoPago")
-    sdk = Mercadopago::SDK.new(payment_method.preferred_access_token)
+    return unless payment_method
+    sdk = Mercadopago::SDK.new(payment_method.preferred_access_token || '')
     payment_response = sdk.payment.get(x_reference)&.dig(:response)
     Rails.logger.info(">>> payment_response: #{payment_response.dig("status")}")
     # GET PAYMENT TO CHECK UPDATES

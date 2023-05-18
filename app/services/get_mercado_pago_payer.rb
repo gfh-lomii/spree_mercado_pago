@@ -10,7 +10,9 @@ class GetMercadoPagoPayer
   def call
     user = Spree::User.find(@user_id)
     payment_method = Spree::PaymentMethod.find_by_type("Spree::PaymentMethod::MercadoPago")
-    sdk = Mercadopago::SDK.new(payment_method.preferred_access_token)
+    return { customer_id: '', cards: [] } unless payment_method
+
+    sdk = Mercadopago::SDK.new(payment_method.preferred_access_token || '')
     customers_response = sdk.customer.search(filters: { email: user.email })&.dig(:response)&.dig("results")&.first
     customer_id = customers_response&.dig("id")
     unless customer_id
