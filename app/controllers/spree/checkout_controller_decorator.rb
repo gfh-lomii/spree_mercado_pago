@@ -8,7 +8,7 @@ module Spree
       if @order.update_from_params(params, permitted_checkout_attributes, request.headers.env)
         @order.temporary_address = !params[:save_user_address]
         if @order.state == 'payment'
-          pm_id = params[:order][:payments_attributes].first.dig(:payment_method_id)
+          pm_id = params.dig(:order, :payments_attributes)&.first&.dig(:payment_method_id)
           payment_method = Spree::PaymentMethod.find(pm_id)
           if payment_method && payment_method.kind_of?(Spree::PaymentMethod::MercadoPago)
             # pay with mercadopago

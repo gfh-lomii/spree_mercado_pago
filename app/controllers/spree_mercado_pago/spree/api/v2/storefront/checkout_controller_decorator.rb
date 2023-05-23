@@ -9,8 +9,6 @@ module SpreeMercadoPago
             end
 
             def mercadopago_checkout
-              pm_id = params[:order][:payments_attributes].first.dig(:payment_method_id)
-              Rails.logger.info ">>>> mercadopago_checkout: #{pm_id}"
               spree_authorize! :update, spree_current_order, order_token
 
               result = update_service.call(
@@ -22,7 +20,7 @@ module SpreeMercadoPago
               )
 
               if spree_current_order.state == 'payment'
-                pm_id = params[:order][:payments_attributes].first.dig(:payment_method_id)
+                pm_id = params.dig(:order, :payments_attributes)&.first&.dig(:payment_method_id)
                 payment_method = spree_current_order.payments.last&.payment_method
                 if payment_method && payment_method.kind_of?(::Spree::PaymentMethod::MercadoPago)
                   # pay with mercadopago
