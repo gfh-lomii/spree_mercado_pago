@@ -21,5 +21,9 @@ module Spree
     rescue
       head :unprocessable_entity
     end
+
+    def user
+      render json: GetMercadoPagoPayer.call(spree_current_user&.id), status: :ok
+    end
   end
 end
