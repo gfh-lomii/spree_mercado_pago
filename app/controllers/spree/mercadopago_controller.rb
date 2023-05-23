@@ -1,7 +1,6 @@
 module Spree
   class MercadopagoController < Spree::BaseController
     protect_from_forgery except: [:notify]
-    before_action :require_spree_current_user, only: [:user]
 
     # EXAMPLE NOTIFICATION
     # {
@@ -21,10 +20,6 @@ module Spree
       head :ok
     rescue
       head :unprocessable_entity
-    end
-
-    def user
-      render json: GetMercadoPagoPayer.call(spree_current_user&.id), status: :ok
     end
   end
 end
