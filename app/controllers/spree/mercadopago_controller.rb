@@ -1,6 +1,7 @@
 module Spree
   class MercadopagoController < Spree::BaseController
     protect_from_forgery except: [:notify]
+    before_action :require_spree_current_user, only: [:user]
 
     # EXAMPLE NOTIFICATION
     # {
