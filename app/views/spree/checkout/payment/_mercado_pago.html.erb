@@ -11,7 +11,7 @@
 <%= hidden_field_tag 'order[mercadopago][payer][id]' %>
 <%= hidden_field_tag 'order[mercadopago][payer][identification][type]' %>
 <%= hidden_field_tag 'order[mercadopago][payer][identification][number]' %>
-
+<p class="mp-error text-danger d-none">Por favor revise los datos ingresados</p>
 <% payer = GetMercadoPagoPayer.call(spree_current_user.id) %>
 
 <script>

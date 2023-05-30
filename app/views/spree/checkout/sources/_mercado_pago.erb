@@ -46,31 +46,40 @@
       }
 
       $('#mercado-pago-button').on('click', function() {
+        $('.mp-error').toggleClass('d-none', false)
         disableMercadoPagoBtn()
 
         const formData = $('form').serializeArray();
         window.paymentBrickController.getFormData()
           .then(async (cardFormData) => {
             console.log('creating payment...', cardFormData);
-            document.getElementById('order_mercadopago_transaction_amount').value = cardFormData.formData.transaction_amount
-            document.getElementById('order_mercadopago_token').value = cardFormData.formData.token
-            document.getElementById('order_mercadopago_installments').value = cardFormData.formData.installments
-            document.getElementById('order_mercadopago_payment_method_id').value = cardFormData.formData.payment_method_id
-            document.getElementById('order_mercadopago_payer_email').value = cardFormData.formData.payer.email
-            if (cardFormData.formData.payer.type === "customer") {
-              document.getElementById('order_mercadopago_payer_type').value = cardFormData.formData.payer.type
-              document.getElementById('order_mercadopago_payer_id').value = cardFormData.formData.payer.id
+            if(cardFormData.formData === null) {
+              enableMercadoPagoBtn()
+              // manejo de errores al llamar a getFormData()
+              // console.error('cardFormData received error', error);
+              $('.mp-error').toggleClass('d-none', true)
             } else {
-              document.getElementById('order_mercadopago_payer_identification_type').value = cardFormData.formData.payer.identification.type
-              document.getElementById('order_mercadopago_payer_identification_number').value = cardFormData.formData.payer.identification.number
-            }
+              document.getElementById('order_mercadopago_transaction_amount').value = cardFormData.formData.transaction_amount
+              document.getElementById('order_mercadopago_token').value = cardFormData.formData.token
+              document.getElementById('order_mercadopago_installments').value = cardFormData.formData.installments
+              document.getElementById('order_mercadopago_payment_method_id').value = cardFormData.formData.payment_method_id
+              document.getElementById('order_mercadopago_payer_email').value = cardFormData.formData.payer.email
+              if (cardFormData.formData.payer.type === "customer") {
+                document.getElementById('order_mercadopago_payer_type').value = cardFormData.formData.payer.type
+                document.getElementById('order_mercadopago_payer_id').value = cardFormData.formData.payer.id
+              } else {
+                document.getElementById('order_mercadopago_payer_identification_type').value = cardFormData.formData.payer.identification.type
+                document.getElementById('order_mercadopago_payer_identification_number').value = cardFormData.formData.payer.identification.number
+              }
 
-            document.querySelector("form").submit()
+              document.querySelector("form").submit()
+            }
           })
           .catch((error) => {
             enableMercadoPagoBtn()
             // manejo de errores al llamar a getFormData()
-            console.error('cardFormData received error', error);
+            // console.error('cardFormData received error', error);
+            $('.mp-error').toggleClass('d-none', true)
           });
       });
     });
