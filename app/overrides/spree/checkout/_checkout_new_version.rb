@@ -17,7 +17,7 @@ Deface::Override.new(
 )
 
 Deface::Override.new(
-  virtual_path: 'spree/checkout/_payment_methods',
+  virtual_path: 'spree/checkout/_checkout_new_version',
   name: 'remove_old_submit_button',
   remove: 'erb[loud]:contains("button_tag")',
   closing_selector: "erb[silent]:contains('end')",
@@ -32,7 +32,7 @@ Deface::Override.new(
 )
 
 Deface::Override.new(
-  virtual_path: 'spree/checkout/_payment_methods',
+  virtual_path: 'spree/checkout/_checkout_new_version',
   name: 'mercado_pago_button',
   insert_bottom: 'div#checkout-details',
   text: %q(
