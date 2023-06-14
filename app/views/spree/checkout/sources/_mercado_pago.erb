@@ -46,8 +46,8 @@
       }
 
       $('#mercado-pago-button').on('click', function() {
-        $('.mp-error').toggleClass('d-none', false)
-        disableMercadoPagoBtn()
+        $('.mp-error').toggleClass('d-none', true)
+        disableMercadoPagoBtn();
 
         const formData = $('form').serializeArray();
         window.paymentBrickController.getFormData()
@@ -57,7 +57,7 @@
               enableMercadoPagoBtn()
               // manejo de errores al llamar a getFormData()
               // console.error('cardFormData received error', error);
-              $('.mp-error').toggleClass('d-none', true)
+              $('.mp-error').toggleClass('d-none', false)
             } else {
               document.getElementById('order_mercadopago_transaction_amount').value = cardFormData.formData.transaction_amount
               document.getElementById('order_mercadopago_token').value = cardFormData.formData.token
@@ -79,7 +79,7 @@
             enableMercadoPagoBtn()
             // manejo de errores al llamar a getFormData()
             // console.error('cardFormData received error', error);
-            $('.mp-error').toggleClass('d-none', true)
+            $('.mp-error').toggleClass('d-none', false)
           });
       });
     });
