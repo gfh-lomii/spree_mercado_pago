@@ -36,13 +36,6 @@ Deface::Override.new(
   name: 'mercado_pago_button',
   insert_bottom: 'div#checkout-details',
   text: %q(
-    <%= button_tag type: 'submit', class: "btn primary btn-sm p-2 mt-2 btn-block #{'d-none' if default_method.kind_of?(Spree::PaymentMethod::MercadoPago)}", data: { action: 'click->checkout#onSubmit' } do %>
-      <div class="d-flex justify-content-between px-3">
-        <span><%= Spree.t(:pay).capitalize %></span>
-        <span><%= @order.display_total.to_html %></span>
-      </div>
-    <% end %>
-
     <!-- BUTTON FOR MERCADO PAGO FORM -->
     <%= button_tag type: 'button', id: "mercado-pago-button", class: "btn primary btn-sm p-2 mt-2 btn-block #{'d-none' unless default_method.kind_of?(Spree::PaymentMethod::MercadoPago)}" do %>
       <div class="d-flex justify-content-between px-3">
