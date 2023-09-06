@@ -11,24 +11,27 @@
 <%= hidden_field_tag 'order[mercadopago][payer][id]' %>
 <%= hidden_field_tag 'order[mercadopago][payer][identification][type]' %>
 <%= hidden_field_tag 'order[mercadopago][payer][identification][number]' %>
-<p class="mp-error text-danger d-none">Por favor revise los datos ingresados</p>
-<% payer = GetMercadoPagoPayer.call(spree_current_user.id) %>
+<p class="mp-error text-danger d-none"><%= Spree.t(:please_check_the_data_entered)%></p>
 
 <script>
   document.addEventListener("DOMContentLoaded", function(event) {
+    show_mercado_pago(<%= @order.total %>);
+  });
+
+  function show_mercado_pago(total_order) {
     $("#paymentBrick_container").show(function(){
-      const mp = new MercadoPago("<%= Spree::PaymentMethod.find_by_type('Spree::PaymentMethod::MercadoPago')&.preferred_public_key %>", {
+      const mp = new MercadoPago("<%= Spree::PaymentMethod.find_by(type: 'Spree::PaymentMethod::MercadoPago')&.preferred_public_key %>", {
         locale: 'es-CL',
       });
       const bricksBuilder = mp.bricks({ theme: 'bootstrap' });
       const renderPaymentBrick = async (bricksBuilder) => {
         const settings = {
           initialization: {
-            amount: <%= @order.total %>, // monto a ser pago
+            amount: total_order, // monto a ser pago
             payer: {
               email: "<%= spree_current_user.email %>",
-              customerId: "<%= payer.dig(:customer_id) %>",
-              cardsIds: [<%= payer.dig(:cards).join(', ') %>]
+              customerId: "<%= @payer.dig(:customer_id) %>",
+              cardsIds: [<%= @payer.dig(:cards).join(', ') %>]
             },
           },
           customization: {
@@ -57,7 +60,7 @@
               */
             },
             onSubmit: ({ selectedPaymentMethod, formData }) => {
-              // callback llamado cuando el usuario haz clic en el botón enviar los datos
+              // callback llamado cuando el usuario hace clic en el botón enviar los datos
             },
             onError: (error) => {
               // callback llamado para todos los casos de error de Brick
@@ -69,5 +72,5 @@
       };
       renderPaymentBrick(bricksBuilder);
     });
-  });
+  }
 </script>

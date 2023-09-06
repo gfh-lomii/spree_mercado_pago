@@ -1,3 +1,4 @@
 es:
   spree:
     pay: pagar
+    please_check_the_data_entered: Por favor revise los datos ingresados

@@ -1,6 +1,7 @@
 module Spree
   module CheckoutControllerDecorator
     def self.prepended(base)
+      base.before_action :set_payer_mp, only: %i[edit]
       base.before_action :mercadopago_checkout, only: %i[update]
     end
 
@@ -32,6 +33,10 @@ module Spree
           redirect_to(checkout_state_path(@order.state)) && return
         end
       end
+    end
+
+    def set_payer_mp
+      @payer = GetMercadoPagoPayer.call(spree_current_user.id)
     end
   end
 end
