@@ -30,8 +30,8 @@
             amount: total_order, // monto a ser pago
             payer: {
               email: "<%= spree_current_user.email %>",
-              customerId: "<%= @payer.dig(:customer_id) %>",
-              cardsIds: [<%= @payer.dig(:cards).join(', ') %>]
+              customerId: "<%= @payer&.dig(:customer_id) %>",
+              cardsIds: [<%= @payer&.dig(:cards).join(', ') %>]
             },
           },
           customization: {
