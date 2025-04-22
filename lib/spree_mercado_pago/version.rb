@@ -1,5 +1,5 @@
 module SpreeMercadoPago
-  VERSION = '0.1.20'.freeze
+  VERSION = '0.1.21'.freeze
 
   module_function
 
