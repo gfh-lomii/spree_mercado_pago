@@ -37,6 +37,7 @@ module Spree
 
     def set_payer_mp
       @payer = GetMercadoPagoPayer.call(spree_current_user.id)
+
     end
   end
 end
